@@ -1,9 +1,12 @@
 import os
 import json
-from flask import Flask, render_template
-
+# all of them needed for different functions. render and request.
+from flask import Flask, render_template, request, flash
+if os.path.exists("env.py"):
+    import env
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 
 
 @app.route("/")
@@ -19,6 +22,7 @@ def about():
     return render_template("about.html", page_title="About", company=data)
 
 
+# Code use to redirect to different pages
 @app.route("/about/<member_name>")
 def about_member(member_name):
     member = {}
@@ -30,8 +34,14 @@ def about_member(member_name):
                 return render_template("member.html", member=member)
 
 
-@app.route("/contact")
+# python code to get information from forms
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
+    if request.method == "POST":
+        flash("Thanks {}, we have received your message".format(
+            request.form.get("name")))
+        print(request.form.get("name"))
+        print(request.form["email"])
     return render_template("contact.html", page_title="Contact us")
 
 
